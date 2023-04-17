@@ -19,8 +19,8 @@ public class Reversi {
 
     private static final Random random = new Random();
 
-    private static final int WHITE_DEPTH = 8;
-    private static final int BLACK_DEPTH = 8;
+    private static final int WHITE_DEPTH = 7;
+    private static final int BLACK_DEPTH = 7;
 
     private static final int[][] POSITION_WEIGHTS = {
             {120, -20, 20, 5, 5, 20, -20, 120},
@@ -312,15 +312,15 @@ public class Reversi {
         int bestMoveVal = Integer.MIN_VALUE;
         List<Integer> validMoves = getValidMoves(board, currentPlayer);
         for (int move : validMoves) {
-//            int currMoveVal = minimize(board, currentPlayer, depth, alpha, beta, evaluationFunction, playersMove);
+//            int currMoveVal = minimize(board, currentPlayer, depth, Integer.MIN_VALUE, Integer.MAX_VALUE, evaluationFunction, playersMove);
             int currMoveVal = forkJoinPool.invoke(new MinimizeTask(board, currentPlayer, depth, Integer.MIN_VALUE, Integer.MAX_VALUE, evaluationFunction, playersMove));
-            if (currMoveVal > bestMoveVal) {
+            if (currMoveVal >= bestMoveVal) {
                 bestMoveVal = currMoveVal;
                 bestMove = move;
             }
-            if (currMoveVal == bestMoveVal && random.nextInt() > 50) {
-                bestMove = move;
-            }
+//            if (currMoveVal == bestMoveVal && random.nextInt() > 50) {
+//                bestMove = move;
+//            }
         }
         System.out.printf("Move of the %d; score: %d; move: %d%n", currentPlayer, bestMoveVal, bestMove);
         return bestMove;
