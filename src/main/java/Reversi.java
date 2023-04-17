@@ -20,7 +20,7 @@ public class Reversi {
             {1, -1}, {1, 0}, {1, 1}
     };
 
-    private static final int WHITE_DEPTH = 6;
+    private static final int WHITE_DEPTH = 7;
     private static final int BLACK_DEPTH = 7;
 
     private static final int[][] POSITION_WEIGHTS = {
