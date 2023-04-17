@@ -319,7 +319,6 @@ public class Reversi {
             makeMove(newBoard, currentPlayer, move);
             Future<Integer> future = executorService.submit(new MinimizeTask(newBoard, currentPlayer, depth, Integer.MIN_VALUE, Integer.MAX_VALUE, evaluationFunction, playersMove));
             try {
-//            int currMoveVal = minimize(newBoard, currentPlayer, depth, Integer.MIN_VALUE, Integer.MAX_VALUE, evaluationFunction, playersMove);
                 int currMoveVal = future.get();
                 // add some random, so every game is different
                 if (currMoveVal == bestMoveVal && random.nextInt() > 50) {
