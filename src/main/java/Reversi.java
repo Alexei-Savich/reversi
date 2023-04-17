@@ -87,19 +87,19 @@ public class Reversi {
                 if (whitePlayer != 0) {
                     int aiMove;
                     if (whitePlayer == 1) {
-                        aiMove = minimax(board, WHITE, WHITE_DEPTH, Reversi::evaluateBoard, WHITE, random);
+                        aiMove = minimax(board, WHITE_DEPTH, Reversi::evaluateBoard, WHITE, random);
                     } else if (whitePlayer == 2) {
-                        aiMove = minimax(board, WHITE, WHITE_DEPTH, Reversi::evaluateBoardWithWeightsNoPenalties, WHITE, random);
+                        aiMove = minimax(board, WHITE_DEPTH, Reversi::evaluateBoardWithWeightsNoPenalties, WHITE, random);
                     } else if (whitePlayer == 3) {
-                        aiMove = minimax(board, WHITE, WHITE_DEPTH, Reversi::evaluateBoardWithWeights, WHITE, random);
+                        aiMove = minimax(board, WHITE_DEPTH, Reversi::evaluateBoardWithWeights, WHITE, random);
                     } else {
                         int cornersNum = numOfOccupiedCorners(board, WHITE);
                         if (cornersNum == 2) {
-                            aiMove = minimax(board, WHITE, WHITE_DEPTH, Reversi::evaluateBoardWithWeightsNoPenalties, WHITE, random);
+                            aiMove = minimax(board, WHITE_DEPTH, Reversi::evaluateBoardWithWeightsNoPenalties, WHITE, random);
                         } else if (cornersNum > 2) {
-                            aiMove = minimax(board, WHITE, WHITE_DEPTH, Reversi::evaluateBoard, WHITE, random);
+                            aiMove = minimax(board, WHITE_DEPTH, Reversi::evaluateBoard, WHITE, random);
                         } else {
-                            aiMove = minimax(board, WHITE, WHITE_DEPTH, Reversi::evaluateBoardWithWeights, WHITE, random);
+                            aiMove = minimax(board, WHITE_DEPTH, Reversi::evaluateBoardWithWeights, WHITE, random);
                         }
                     }
                     int aiRow = aiMove / 8 + 1;
@@ -126,19 +126,19 @@ public class Reversi {
                 if (blackPlayer != 0) {
                     int aiMove;
                     if (blackPlayer == 1) {
-                        aiMove = minimax(board, BLACK, BLACK_DEPTH, Reversi::evaluateBoard, BLACK, random);
+                        aiMove = minimax(board, BLACK_DEPTH, Reversi::evaluateBoard, BLACK, random);
                     } else if (blackPlayer == 2) {
-                        aiMove = minimax(board, BLACK, BLACK_DEPTH, Reversi::evaluateBoardWithWeightsNoPenalties, BLACK, random);
+                        aiMove = minimax(board, BLACK_DEPTH, Reversi::evaluateBoardWithWeightsNoPenalties, BLACK, random);
                     } else if (blackPlayer == 3) {
-                        aiMove = minimax(board, BLACK, BLACK_DEPTH, Reversi::evaluateBoardWithWeights, BLACK, random);
+                        aiMove = minimax(board, BLACK_DEPTH, Reversi::evaluateBoardWithWeights, BLACK, random);
                     } else {
                         int cornersNum = numOfOccupiedCorners(board, BLACK);
                         if (cornersNum == 2) {
-                            aiMove = minimax(board, BLACK, BLACK_DEPTH, Reversi::evaluateBoardWithWeightsNoPenalties, BLACK, random);
+                            aiMove = minimax(board, BLACK_DEPTH, Reversi::evaluateBoardWithWeightsNoPenalties, BLACK, random);
                         } else if (cornersNum > 2) {
-                            aiMove = minimax(board, BLACK, BLACK_DEPTH, Reversi::evaluateBoard, BLACK, random);
+                            aiMove = minimax(board, BLACK_DEPTH, Reversi::evaluateBoard, BLACK, random);
                         } else {
-                            aiMove = minimax(board, BLACK, BLACK_DEPTH, Reversi::evaluateBoardWithWeights, BLACK, random);
+                            aiMove = minimax(board, BLACK_DEPTH, Reversi::evaluateBoardWithWeights, BLACK, random);
                         }
                     }
                     int aiRow = aiMove / 8 + 1;
@@ -310,7 +310,7 @@ public class Reversi {
         }
     }
 
-    public static int minimax(int[][] board, int player, int depth, BiFunction<int[][], Integer, Integer> evaluationFunction, int maximizingPlayer, Random random) {
+    public static int minimax(int[][] board, int depth, BiFunction<int[][], Integer, Integer> evaluationFunction, int maximizingPlayer, Random random) {
         int bestMove = -1;
         int bestMoveVal = Integer.MIN_VALUE;
         List<Integer> validMoves = getValidMoves(board, maximizingPlayer);
@@ -414,11 +414,11 @@ public class Reversi {
         int opponentCount = 0;
         int opponent = opponent(player);
 
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[i].length; j++) {
-                if (board[i][j] == player) {
+        for (int[] rows : board) {
+            for (int cell : rows) {
+                if (cell == player) {
                     playerCount++;
-                } else if (board[i][j] == opponent) {
+                } else if (cell == opponent) {
                     opponentCount++;
                 }
             }
