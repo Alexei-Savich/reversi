@@ -20,7 +20,7 @@ public class Reversi {
             {1, -1}, {1, 0}, {1, 1}
     };
 
-    private static final int WHITE_DEPTH = 7;
+    private static final int WHITE_DEPTH = 6;
     private static final int BLACK_DEPTH = 7;
 
     private static final int[][] POSITION_WEIGHTS = {
@@ -62,7 +62,7 @@ public class Reversi {
         System.out.print("Enter Black player setup (0 - Player, 1 - Easy AI, 2 - Medium AI, 3 - Hard AI, 4 - Adaptive AI): ");
         int blackPlayer = scanner.nextInt();
 
-        int currentPlayer = WHITE;
+        int currentPlayer = BLACK;
         while (true) {
             if (currentPlayer == WHITE) {
                 System.out.println("WHITE TURN");
@@ -72,7 +72,7 @@ public class Reversi {
             printBoard(board, currentPlayer);
             List<Integer> validMoves = getValidMoves(board, currentPlayer);
             if (validMoves.isEmpty()) {
-                int nextPlayer = currentPlayer == WHITE ? BLACK : WHITE;
+                int nextPlayer = opponent(currentPlayer);
                 List<Integer> nextValidMoves = getValidMoves(board, nextPlayer);
                 if (nextValidMoves.isEmpty()) {
                     break;
@@ -87,25 +87,25 @@ public class Reversi {
                 if (whitePlayer != 0) {
                     int aiMove;
                     if (whitePlayer == 1) {
-                        aiMove = minimax(board, currentPlayer, WHITE_DEPTH, Reversi::evaluateBoard, currentPlayer, random);
+                        aiMove = minimax(board, WHITE, WHITE_DEPTH, Reversi::evaluateBoard, WHITE, random);
                     } else if (whitePlayer == 2) {
-                        aiMove = minimax(board, currentPlayer, WHITE_DEPTH, Reversi::evaluateBoardWithWeightsNoPenalties, currentPlayer, random);
+                        aiMove = minimax(board, WHITE, WHITE_DEPTH, Reversi::evaluateBoardWithWeightsNoPenalties, WHITE, random);
                     } else if (whitePlayer == 3) {
-                        aiMove = minimax(board, currentPlayer, WHITE_DEPTH, Reversi::evaluateBoardWithWeights, currentPlayer, random);
+                        aiMove = minimax(board, WHITE, WHITE_DEPTH, Reversi::evaluateBoardWithWeights, WHITE, random);
                     } else {
-                        int cornersNum = numOfOccupiedCorners(board, currentPlayer);
+                        int cornersNum = numOfOccupiedCorners(board, WHITE);
                         if (cornersNum == 2) {
-                            aiMove = minimax(board, currentPlayer, WHITE_DEPTH, Reversi::evaluateBoardWithWeightsNoPenalties, currentPlayer, random);
+                            aiMove = minimax(board, WHITE, WHITE_DEPTH, Reversi::evaluateBoardWithWeightsNoPenalties, WHITE, random);
                         } else if (cornersNum > 2) {
-                            aiMove = minimax(board, currentPlayer, WHITE_DEPTH, Reversi::evaluateBoard, currentPlayer, random);
+                            aiMove = minimax(board, WHITE, WHITE_DEPTH, Reversi::evaluateBoard, WHITE, random);
                         } else {
-                            aiMove = minimax(board, currentPlayer, WHITE_DEPTH, Reversi::evaluateBoardWithWeights, currentPlayer, random);
+                            aiMove = minimax(board, WHITE, WHITE_DEPTH, Reversi::evaluateBoardWithWeights, WHITE, random);
                         }
                     }
                     int aiRow = aiMove / 8 + 1;
                     int aiColumn = aiMove - aiMove / 8 * 8;
                     System.out.println("AI move: " + aiColumn + aiRow);
-                    makeMove(board, currentPlayer, aiMove);
+                    makeMove(board, WHITE, aiMove);
                 } else {
                     System.out.print("Enter your move (first column, then row, no spaces): ");
                     int move = scanner.nextInt();
@@ -120,31 +120,31 @@ public class Reversi {
                         row = (move - column * 10) % 8;
                         move = (row - 1) * 8 + column;
                     }
-                    makeMove(board, currentPlayer, move);
+                    makeMove(board, WHITE, move);
                 }
             } else {
                 if (blackPlayer != 0) {
                     int aiMove;
                     if (blackPlayer == 1) {
-                        aiMove = minimax(board, currentPlayer, BLACK_DEPTH, Reversi::evaluateBoard, currentPlayer, random);
+                        aiMove = minimax(board, BLACK, BLACK_DEPTH, Reversi::evaluateBoard, BLACK, random);
                     } else if (blackPlayer == 2) {
-                        aiMove = minimax(board, currentPlayer, BLACK_DEPTH, Reversi::evaluateBoardWithWeightsNoPenalties, currentPlayer, random);
-                    } else if (whitePlayer == 3) {
-                        aiMove = minimax(board, currentPlayer, BLACK_DEPTH, Reversi::evaluateBoardWithWeights, currentPlayer, random);
+                        aiMove = minimax(board, BLACK, BLACK_DEPTH, Reversi::evaluateBoardWithWeightsNoPenalties, BLACK, random);
+                    } else if (blackPlayer == 3) {
+                        aiMove = minimax(board, BLACK, BLACK_DEPTH, Reversi::evaluateBoardWithWeights, BLACK, random);
                     } else {
-                        int cornersNum = numOfOccupiedCorners(board, currentPlayer);
+                        int cornersNum = numOfOccupiedCorners(board, BLACK);
                         if (cornersNum == 2) {
-                            aiMove = minimax(board, currentPlayer, BLACK_DEPTH, Reversi::evaluateBoardWithWeightsNoPenalties, currentPlayer, random);
+                            aiMove = minimax(board, BLACK, BLACK_DEPTH, Reversi::evaluateBoardWithWeightsNoPenalties, BLACK, random);
                         } else if (cornersNum > 2) {
-                            aiMove = minimax(board, currentPlayer, BLACK_DEPTH, Reversi::evaluateBoard, currentPlayer, random);
+                            aiMove = minimax(board, BLACK, BLACK_DEPTH, Reversi::evaluateBoard, BLACK, random);
                         } else {
-                            aiMove = minimax(board, currentPlayer, BLACK_DEPTH, Reversi::evaluateBoardWithWeights, currentPlayer, random);
+                            aiMove = minimax(board, BLACK, BLACK_DEPTH, Reversi::evaluateBoardWithWeights, BLACK, random);
                         }
                     }
                     int aiRow = aiMove / 8 + 1;
                     int aiColumn = aiMove - aiMove / 8 * 8;
                     System.out.println("AI move: " + aiColumn + aiRow);
-                    makeMove(board, currentPlayer, aiMove);
+                    makeMove(board, BLACK, aiMove);
                 } else {
                     System.out.print("Enter your move (first column, then row, no spaces): ");
                     int move = scanner.nextInt();
@@ -159,10 +159,10 @@ public class Reversi {
                         row = (move - column * 10) % 8;
                         move = (row - 1) * 8 + column;
                     }
-                    makeMove(board, currentPlayer, move);
+                    makeMove(board, BLACK, move);
                 }
             }
-            currentPlayer = currentPlayer == WHITE ? BLACK : WHITE;
+            currentPlayer = opponent(currentPlayer);
             System.out.println();
         }
 
@@ -237,7 +237,7 @@ public class Reversi {
     }
 
     private static boolean isValidDirection(int[][] board, int player, int row, int col, int[] direction) {
-        int opponent = player == WHITE ? BLACK : WHITE;
+        int opponent = opponent(player);
 
         if (!isInBounds(board, row, col) || board[row][col] != opponent) {
             return false;
@@ -310,18 +310,20 @@ public class Reversi {
         }
     }
 
-    private static int minimax(int[][] board, int currentPlayer, int depth, BiFunction<int[][], Integer, Integer> evaluationFunction, int playersMove, Random random) {
+    public static int minimax(int[][] board, int player, int depth, BiFunction<int[][], Integer, Integer> evaluationFunction, int maximizingPlayer, Random random) {
         int bestMove = -1;
         int bestMoveVal = Integer.MIN_VALUE;
-        List<Integer> validMoves = getValidMoves(board, currentPlayer);
+        List<Integer> validMoves = getValidMoves(board, maximizingPlayer);
         for (int move : validMoves) {
             int[][] newBoard = copyBoard(board);
-            makeMove(newBoard, currentPlayer, move);
-            Future<Integer> future = executorService.submit(new MinimizeTask(newBoard, currentPlayer, depth, Integer.MIN_VALUE, Integer.MAX_VALUE, evaluationFunction, playersMove));
+            makeMove(newBoard, maximizingPlayer, move);
+            Future<Integer> future = executorService.submit(new MinimizeTask(newBoard, maximizingPlayer, depth, Integer.MIN_VALUE, Integer.MAX_VALUE, evaluationFunction, maximizingPlayer));
+//            int currMoveVal = minimize(newBoard, maximizingPlayer, depth, Integer.MIN_VALUE, Integer.MAX_VALUE, evaluationFunction, maximizingPlayer);
             try {
                 int currMoveVal = future.get();
+                System.out.printf("Position: %d; score: %d, player: %d\n", move, currMoveVal, maximizingPlayer);
                 // add some random, so every game is different
-                if (currMoveVal == bestMoveVal && random.nextInt() > 50) {
+                if (currMoveVal == bestMoveVal && random.nextInt(100) > 50) {
                     bestMove = move;
                     continue;
                 }
@@ -333,16 +335,16 @@ public class Reversi {
                 e.printStackTrace();
             }
         }
-        System.out.printf("Move of the %d; score: %d; move: %d%n", currentPlayer, bestMoveVal, bestMove);
+        System.out.printf("Move of the %d; score: %d; move: %d%n", maximizingPlayer, bestMoveVal, bestMove);
         return bestMove;
     }
 
-    private static int maximize(int[][] board, int currentPlayer, int depth, int alpha, int beta, BiFunction<int[][], Integer, Integer> evaluationFunction, int playersMove) {
+    private static int maximize(int[][] board, int currentPlayer, int depth, int alpha, int beta, BiFunction<int[][], Integer, Integer> evaluationFunction, int maximizingPlayer) {
         if (depth == 0) {
-            return evaluationFunction.apply(board, playersMove);
+            return evaluationFunction.apply(board, maximizingPlayer);
         }
         if (isGameOver(board)) {
-            return evaluateBoard(board, playersMove);
+            return evaluateBoard(board, maximizingPlayer) * 1000;
         }
 
         List<Integer> validMoves = getValidMoves(board, currentPlayer);
@@ -351,7 +353,7 @@ public class Reversi {
         for (int move : validMoves) {
             int[][] newBoard = copyBoard(board);
             makeMove(newBoard, currentPlayer, move);
-            int eval = minimize(newBoard, opponent(currentPlayer), depth - 1, alpha, beta, evaluationFunction, playersMove);
+            int eval = minimize(newBoard, opponent(currentPlayer), depth - 1, alpha, beta, evaluationFunction, maximizingPlayer);
 
             if (eval > maxEval) {
                 maxEval = eval;
@@ -364,12 +366,12 @@ public class Reversi {
         return maxEval;
     }
 
-    private static int minimize(int[][] board, int currentPlayer, int depth, int alpha, int beta, BiFunction<int[][], Integer, Integer> evaluationFunction, int playersMove) {
+    private static int minimize(int[][] board, int currentPlayer, int depth, int alpha, int beta, BiFunction<int[][], Integer, Integer> evaluationFunction, int maximizingPlayer) {
         if (depth == 0) {
-            return evaluationFunction.apply(board, playersMove);
+            return evaluationFunction.apply(board, maximizingPlayer);
         }
         if (isGameOver(board)) {
-            return evaluateBoard(board, playersMove);
+            return evaluateBoard(board, maximizingPlayer) * 1000;
         }
 
         List<Integer> validMoves = getValidMoves(board, currentPlayer);
@@ -378,7 +380,7 @@ public class Reversi {
         for (int move : validMoves) {
             int[][] newBoard = copyBoard(board);
             makeMove(newBoard, currentPlayer, move);
-            int eval = maximize(newBoard, opponent(currentPlayer), depth - 1, alpha, beta, evaluationFunction, playersMove);
+            int eval = maximize(newBoard, opponent(currentPlayer), depth - 1, alpha, beta, evaluationFunction, maximizingPlayer);
 
             if (eval < minEval) {
                 minEval = eval;
@@ -410,13 +412,13 @@ public class Reversi {
     private static int evaluateBoard(int[][] board, int player) {
         int playerCount = 0;
         int opponentCount = 0;
-        int opponent = player == WHITE ? BLACK : WHITE;
+        int opponent = opponent(player);
 
-        for (int[] row : board) {
-            for (int cell : row) {
-                if (cell == player) {
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                if (board[i][j] == player) {
                     playerCount++;
-                } else if (cell == opponent) {
+                } else if (board[i][j] == opponent) {
                     opponentCount++;
                 }
             }
@@ -427,7 +429,7 @@ public class Reversi {
     private static int evaluateBoardWithWeights(int[][] board, int player) {
         int playerCount = 0;
         int opponentCount = 0;
-        int opponent = player == WHITE ? BLACK : WHITE;
+        int opponent = opponent(player);
 
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
@@ -444,7 +446,7 @@ public class Reversi {
     private static int evaluateBoardWithWeightsNoPenalties(int[][] board, int player) {
         int playerCount = 0;
         int opponentCount = 0;
-        int opponent = player == WHITE ? BLACK : WHITE;
+        int opponent = opponent(player);
 
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
@@ -500,7 +502,7 @@ public class Reversi {
                 return evaluationFunction.apply(board, playersMove);
             }
             if (isGameOver(board)) {
-                return evaluateBoard(board, playersMove);
+                return evaluateBoard(board, playersMove) * 1000;
             }
 
             List<Integer> validMoves = getValidMoves(board, currentPlayer);
