@@ -12,3 +12,16 @@ At the beginning you are able to choose between 5 game options:
 When there are more than 1 move with the same evaluation score are available, the algorithms randomly chooses between them, so each game is different
 
 Multithreading is used to increase computational performance
+
+Weights for cells are used in the following way:
+
+| | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| **1** | 120 | -20 | 20 | 5 | 5 | 20 | -20 | 120 |
+| **2** | -20 | -40 | -5 | -5 | -5 | -5 | -40 | -20 |
+| **3** | 20 | -5 | 15 | 3 | 3 | 15 | -5 | 20 |
+| **4** | 5 | -5 | 3 | 3 | 3 | 3 | -5 | 5 |
+| **5** | 5 | -5 | 3 | 3 | 3 | 3 | -5 | 5 | 
+| **6** | 20 | -5 | 15 | 3 | 3 | 15 | -5 | 20 |
+| **7** | -20 | -40 | -5 | -5 | -5 | -5 | -40 | -20 |
+| **8** | 120 | -20 | 20 | 5 | 5 | 20 | -20 | 120 |
