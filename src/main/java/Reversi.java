@@ -20,7 +20,7 @@ public class Reversi {
             {1, -1}, {1, 0}, {1, 1}
     };
 
-    private static final int WHITE_DEPTH = 6;
+    private static final int WHITE_DEPTH = 7;
     private static final int BLACK_DEPTH = 7;
 
     private static final int[][] POSITION_WEIGHTS = {
@@ -484,7 +484,7 @@ public class Reversi {
         private final int alpha;
         private int beta;
         private final BiFunction<int[][], Integer, Integer> evaluationFunction;
-        private final int playersMove;
+        private final int maximizingPlayer;
 
         public MinimizeTask(int[][] board, int currentPlayer, int depth, int alpha, int beta, BiFunction<int[][], Integer, Integer> evaluationFunction, int playersMove) {
             this.board = board;
@@ -493,16 +493,16 @@ public class Reversi {
             this.alpha = alpha;
             this.beta = beta;
             this.evaluationFunction = evaluationFunction;
-            this.playersMove = playersMove;
+            this.maximizingPlayer = playersMove;
         }
 
         @Override
         public Integer call() {
             if (depth == 0) {
-                return evaluationFunction.apply(board, playersMove);
+                return evaluationFunction.apply(board, maximizingPlayer);
             }
             if (isGameOver(board)) {
-                return evaluateBoard(board, playersMove) * 1000;
+                return evaluateBoard(board, maximizingPlayer) * 1000;
             }
 
             List<Integer> validMoves = getValidMoves(board, currentPlayer);
@@ -511,7 +511,7 @@ public class Reversi {
             for (int move : validMoves) {
                 int[][] newBoard = copyBoard(board);
                 makeMove(newBoard, currentPlayer, move);
-                int eval = maximize(newBoard, opponent(currentPlayer), depth - 1, alpha, beta, evaluationFunction, playersMove);
+                int eval = maximize(newBoard, opponent(currentPlayer), depth - 1, alpha, beta, evaluationFunction, maximizingPlayer);
 
                 if (eval < minEval) {
                     minEval = eval;
