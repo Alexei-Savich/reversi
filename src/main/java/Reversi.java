@@ -20,8 +20,8 @@ public class Reversi {
             {1, -1}, {1, 0}, {1, 1}
     };
 
-    private static final int WHITE_DEPTH = 7;
-    private static final int BLACK_DEPTH = 7;
+    private static final int WHITE_DEPTH = 8;
+    private static final int BLACK_DEPTH = 8;
 
     private static final int[][] POSITION_WEIGHTS = {
             {120, -20, 20, 5, 5, 20, -20, 120},
@@ -94,9 +94,9 @@ public class Reversi {
                         aiMove = minimax(board, WHITE_DEPTH, Reversi::evaluateBoardWithWeights, WHITE, random);
                     } else {
                         int cornersNum = numOfOccupiedCorners(board, WHITE);
-                        if (cornersNum == 2) {
+                        if (cornersNum >= 2 && cornersNum < 4) {
                             aiMove = minimax(board, WHITE_DEPTH, Reversi::evaluateBoardWithWeightsNoPenalties, WHITE, random);
-                        } else if (cornersNum > 2) {
+                        } else if (cornersNum == 2) {
                             aiMove = minimax(board, WHITE_DEPTH, Reversi::evaluateBoard, WHITE, random);
                         } else {
                             aiMove = minimax(board, WHITE_DEPTH, Reversi::evaluateBoardWithWeights, WHITE, random);
@@ -133,9 +133,9 @@ public class Reversi {
                         aiMove = minimax(board, BLACK_DEPTH, Reversi::evaluateBoardWithWeights, BLACK, random);
                     } else {
                         int cornersNum = numOfOccupiedCorners(board, BLACK);
-                        if (cornersNum == 2) {
+                        if (cornersNum >= 2 && cornersNum < 4) {
                             aiMove = minimax(board, BLACK_DEPTH, Reversi::evaluateBoardWithWeightsNoPenalties, BLACK, random);
-                        } else if (cornersNum > 2) {
+                        } else if (cornersNum == 4) {
                             aiMove = minimax(board, BLACK_DEPTH, Reversi::evaluateBoard, BLACK, random);
                         } else {
                             aiMove = minimax(board, BLACK_DEPTH, Reversi::evaluateBoardWithWeights, BLACK, random);
@@ -325,9 +325,7 @@ public class Reversi {
                 // add some random, so every game is different
                 if (currMoveVal == bestMoveVal && random.nextInt(100) > 50) {
                     bestMove = move;
-                    continue;
-                }
-                if (currMoveVal >= bestMoveVal) {
+                } else if (currMoveVal >= bestMoveVal) {
                     bestMoveVal = currMoveVal;
                     bestMove = move;
                 }
@@ -526,4 +524,3 @@ public class Reversi {
     }
 
 }
-
