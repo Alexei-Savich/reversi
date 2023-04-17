@@ -3,13 +3,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.RecursiveTask;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.function.BiFunction;
 
 public class Reversi {
 
-    private static final ForkJoinPool forkJoinPool = new ForkJoinPool(4);
+    private static final ExecutorService executorService = Executors.newFixedThreadPool(4);
 
     private static final int[][] DIRECTIONS = {
             {-1, -1}, {-1, 0}, {-1, 1},
@@ -312,15 +315,19 @@ public class Reversi {
         int bestMoveVal = Integer.MIN_VALUE;
         List<Integer> validMoves = getValidMoves(board, currentPlayer);
         for (int move : validMoves) {
-//            int currMoveVal = minimize(board, currentPlayer, depth, Integer.MIN_VALUE, Integer.MAX_VALUE, evaluationFunction, playersMove);
-            int currMoveVal = forkJoinPool.invoke(new MinimizeTask(board, currentPlayer, depth, Integer.MIN_VALUE, Integer.MAX_VALUE, evaluationFunction, playersMove));
-            if (currMoveVal >= bestMoveVal) {
-                bestMoveVal = currMoveVal;
-                bestMove = move;
+            Future<Integer> future = executorService.submit(new MinimizeTask(board, currentPlayer, depth, Integer.MIN_VALUE, Integer.MAX_VALUE, evaluationFunction, playersMove));
+            try {
+                int currMoveVal = future.get();
+                if (currMoveVal >= bestMoveVal) {
+                    if (currMoveVal == bestMoveVal && random.nextInt() > 50) {
+                        bestMove = move;
+                    }
+                    bestMoveVal = currMoveVal;
+                    bestMove = move;
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
             }
-//            if (currMoveVal == bestMoveVal && random.nextInt() > 50) {
-//                bestMove = move;
-//            }
         }
         System.out.printf("Move of the %d; score: %d; move: %d%n", currentPlayer, bestMoveVal, bestMove);
         return bestMove;
@@ -464,55 +471,7 @@ public class Reversi {
         return counter;
     }
 
-    private static class MaximizeTask extends RecursiveTask<Integer> {
-        private final int[][] board;
-        private final int currentPlayer;
-        private final int depth;
-        private int alpha;
-        private final int beta;
-        private final BiFunction<int[][], Integer, Integer> evaluationFunction;
-        private final int playersMove;
-
-        public MaximizeTask(int[][] board, int currentPlayer, int depth, int alpha, int beta, BiFunction<int[][], Integer, Integer> evaluationFunction, int playersMove) {
-            this.board = board;
-            this.currentPlayer = currentPlayer;
-            this.depth = depth;
-            this.alpha = alpha;
-            this.beta = beta;
-            this.evaluationFunction = evaluationFunction;
-            this.playersMove = playersMove;
-        }
-
-        @Override
-        protected Integer compute() {
-            if (depth == 0) {
-                return evaluationFunction.apply(board, playersMove);
-            }
-            if (isGameOver(board)) {
-                return evaluateBoard(board, playersMove);
-            }
-
-            List<Integer> validMoves = getValidMoves(board, currentPlayer);
-            int maxEval = Integer.MIN_VALUE;
-
-            for (int move : validMoves) {
-                int[][] newBoard = copyBoard(board);
-                makeMove(newBoard, currentPlayer, move);
-                int eval = new MinimizeTask(newBoard, opponent(currentPlayer), depth - 1, alpha, beta, evaluationFunction, playersMove).fork().join();
-
-                if (eval > maxEval) {
-                    maxEval = eval;
-                }
-                alpha = Math.max(alpha, eval);
-                if (beta <= alpha) {
-                    break;
-                }
-            }
-            return maxEval;
-        }
-    }
-
-    private static class MinimizeTask extends RecursiveTask<Integer> {
+    private static class MinimizeTask implements Callable<Integer> {
         private final int[][] board;
         private final int currentPlayer;
         private final int depth;
@@ -532,7 +491,7 @@ public class Reversi {
         }
 
         @Override
-        protected Integer compute() {
+        public Integer call() {
             if (depth == 0) {
                 return evaluationFunction.apply(board, playersMove);
             }
@@ -546,7 +505,7 @@ public class Reversi {
             for (int move : validMoves) {
                 int[][] newBoard = copyBoard(board);
                 makeMove(newBoard, currentPlayer, move);
-                int eval = new MaximizeTask(newBoard, opponent(currentPlayer), depth - 1, alpha, beta, evaluationFunction, playersMove).fork().join();
+                int eval = maximize(newBoard, opponent(currentPlayer), depth - 1, alpha, beta, evaluationFunction, playersMove);
 
                 if (eval < minEval) {
                     minEval = eval;
